@@ -60,7 +60,7 @@ public class ABCWithSem {
     ;
 }
 ----------------------------------------------------------------------------
-package semaphores;
+package semaphores; // 30 razy E D A F F E D A C 
 
 import java.util.concurrent.Semaphore;
 

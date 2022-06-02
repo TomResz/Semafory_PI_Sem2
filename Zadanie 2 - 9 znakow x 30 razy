@@ -1,0 +1,85 @@
+package semaphores; // 30 razy E D A F F E D A C 
+
+import java.util.concurrent.Semaphore;
+
+import static semaphores.Threading.startThread;
+
+public class ABCWithSem {
+
+    static final PrettyPrinter printer = new PrettyPrinter(9);
+    static final int COUNT = 60;
+
+    static final Semaphore a = new Semaphore(0);  
+    static final Semaphore c = new Semaphore(0);
+    static final Semaphore d = new Semaphore(0);
+    static final Semaphore e = new Semaphore(2);
+    static final Semaphore f = new Semaphore(0);
+    static final Semaphore eda = new Semaphore(1);
+    
+    
+
+    public static void main(String[] args) {
+        startThread(() -> runA());
+        startThread(() -> runC());
+        startThread(() -> runD());
+        startThread(() -> runE());
+        startThread(() -> runF());
+        startThread(() -> runEDA());
+    }
+
+    static void runA() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            a.acquire(2); // acquire to odpowiednik P(a)
+            printer.output("A ");
+            c.release(); // release to odpowiednik V(b)
+            eda.release();
+        }
+    }
+
+
+
+    static void runC() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+        	{
+        		c.acquire(2); // P(c)
+            	printer.output("C ");
+            	e.release(2); // V(a)
+        	}
+        }
+    }
+
+    ;
+    static void runD() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            d.acquire(2); // P(c)
+            printer.output("D ");
+            a.release(2); // V(a)
+        }
+    }
+
+    ;
+    static void runE() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            e.acquire(2); // acquire to odpowiednik P(a)
+            printer.output("E ");
+            d.release(2); // release to odpowiednik V(b)
+        }
+    }
+
+    static void runF() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            f.acquire(); // acquire to odpowiednik P(a)
+            printer.output("F ");
+            e.release(); // release to odpowiednik V(b)
+        }
+    }
+    static void runEDA() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            eda.acquire(2); // P(c)
+            f.release(2); // V(a)
+        }
+    }
+
+    ;
+
+}

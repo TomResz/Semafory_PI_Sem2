@@ -1,0 +1,49 @@
+package semaphores;
+
+import java.util.concurrent.Semaphore;
+
+import static semaphores.Threading.startThread;
+
+public class ABCWithSem {
+
+    static final PrettyPrinter printer = new PrettyPrinter(3);
+    static final int COUNT = 30;
+
+    static final Semaphore a = new Semaphore(0);
+    static final Semaphore b = new Semaphore(0);
+    static final Semaphore c = new Semaphore(0);
+
+    public static void main(String[] args) {
+        startThread(() -> runA());
+        startThread(() -> runB());
+        startThread(() -> runC());
+    }
+
+    static void runA() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            a.acquire(); // acquire to odpowiednik P(a)
+            printer.output("A ");
+            b.release(); // release to odpowiednik V(b)
+        }
+    }
+
+    static void runB() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            b.acquire(); // P(b)
+            printer.output("B ");
+            c.release(); // V(c)
+        }
+    }
+
+    ;
+
+    static void runC() throws InterruptedException {
+        for (int i = 0; i < COUNT; i++) {
+            c.acquire(); // P(c)
+            printer.output("C ");
+            a.release(); // V(a)
+        }
+    }
+
+    ;
+}

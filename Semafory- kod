@@ -1,4 +1,4 @@
-package semaphores;
+package semaphores; // wyświetla B D C A A
 
 import java.util.concurrent.Semaphore;
 
